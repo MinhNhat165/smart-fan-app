@@ -17,7 +17,7 @@ const HomePage = () => {
 				>
 					<ArrowLeftOnRectangleIcon className="w-6 h-6 text-slate-800" />
 				</button>
-				<span className="justify-self-center">Nguyễn Minh Nhật</span>
+				<span className="justify-self-center">Super smart fan</span>
 			</div>
 			<div className="flex flex-col gap-3 md:flex-row md:p-10  md:h-full md:mx-auto">
 				<div>
