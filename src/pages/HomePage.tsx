@@ -1,9 +1,8 @@
-import { ArrowLeftOnRectangleIcon } from '../components/icons';
-
-import { Fan } from '../components/Fan';
 import { AngleControlBar } from '../features/angle';
-import { SpeedControlBar } from '../features/speed';
+import { ArrowLeftOnRectangleIcon } from '../components/icons';
+import { Fan } from '../components/Fan';
 import { OnOfControlBar } from '../features/on-off';
+import { SpeedControlBar } from '../features/speed';
 
 const HomePage = () => {
 	return (
@@ -12,7 +11,7 @@ const HomePage = () => {
 				<button
 					className="w-10 h-10 justify-self-start flex items-center rounded-full justify-center"
 					onClick={() => {
-						window.location.href = '/login';
+						window.location.href = '/auth/login';
 					}}
 				>
 					<ArrowLeftOnRectangleIcon className="w-6 h-6 text-slate-800" />
