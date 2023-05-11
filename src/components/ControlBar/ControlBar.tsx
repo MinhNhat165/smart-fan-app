@@ -1,8 +1,10 @@
-import Switch from '../Switch';
+import { ReactNode, createContext, useContext, useState } from 'react';
+
 import ControlBarBody from './ControlBarBody';
 import ControlBarHeader from './ControlBarHeader';
 import { ControlBarItem } from './ControlBarItem';
-import { createContext, useContext, useState, ReactNode } from 'react';
+import Switch from '../Switch';
+import { useEffect } from 'react';
 
 export interface ControlBarContext {
 	title?: string;
@@ -18,9 +20,13 @@ export function useControlBar() {
 
 export interface ControlBarProps {
 	children?: ReactNode;
+	auto?: boolean;
 }
-export function ControlBar({ children }: ControlBarProps) {
-	const [auto, setAuto] = useState<boolean>(false);
+export function ControlBar({ children, auto: _auto = false }: ControlBarProps) {
+	const [auto, setAuto] = useState<boolean>(_auto);
+	useEffect(() => {
+		setAuto(_auto);
+	}, [_auto]);
 	return (
 		<ControlBarContext.Provider
 			value={{
