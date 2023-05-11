@@ -6,8 +6,8 @@ import LoginPage from '../pages/LoginPage';
 const AppRoutes = () => {
 	return (
 		<Routes>
-			<Route path="/" element={<HomePage />} />
 			<Route path="/auth/login" element={<LoginPage />} />
+			<Route path="/" element={<HomePage />} />
 		</Routes>
 	);
 };

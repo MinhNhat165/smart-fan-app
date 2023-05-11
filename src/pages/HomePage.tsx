@@ -1,10 +1,26 @@
+import { onValue, ref } from 'firebase/database';
+
 import { AngleControlBar } from '../features/angle';
 import { ArrowLeftOnRectangleIcon } from '../components/icons';
-import { Fan } from '../components/Fan';
+import { Fan } from '../types/fan';
+import { Fan as FanUi } from '../components/Fan';
 import { OnOfControlBar } from '../features/on-off';
 import { SpeedControlBar } from '../features/speed';
+import { db } from '../lib/firebase';
+import { useEffect } from 'react';
+import { useOnOfFan } from '../store/FanState';
 
 const HomePage = () => {
+	const { setAuto, setEnable } = useOnOfFan();
+	useEffect(() => {
+		const starCountRef = ref(db, '/fan');
+		onValue(starCountRef, (snapshot) => {
+			const data: Fan = snapshot.val();
+			setEnable(data.enable);
+			setAuto(data.auto);
+		});
+	}, []);
+
 	return (
 		<div className="w-screen home h-screen bg-slate-50 flex flex-col gap-3 pb-4 text-slate-600">
 			<div className="h-14 w-full  flex bg-white items-center shadow-md sticky top-0 p-2 z-10">
@@ -21,7 +37,7 @@ const HomePage = () => {
 			<div className="flex flex-col gap-3 md:flex-row md:p-10  md:h-full md:mx-auto">
 				<div>
 					<div className="w-full flex justify-self-center justify-center mb-4">
-						<Fan />
+						<FanUi />
 					</div>
 					<div className="flex justify-center px-10 pb-2 gap-2">
 						<div className="text-slate-600 w-32 text-center">

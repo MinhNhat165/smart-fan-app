@@ -4,7 +4,7 @@ import { getDatabase } from 'firebase/database';
 import { initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
-	apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+	apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
 	authDomain: 'blog-nodv.firebaseapp.com',
 	databaseURL:
 		'https://blog-nodv-default-rtdb.asia-southeast1.firebasedatabase.app',

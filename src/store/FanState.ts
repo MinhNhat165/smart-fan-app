@@ -1,27 +1,26 @@
+import { Fan } from '../types/fan';
 import { create } from 'zustand';
+
 enum Mode {
 	Auto = 'auto',
 	Manual = 'manual',
 }
 
 interface FanState {
-	data: {
-		on: boolean;
-		mode: Mode;
-	};
-	setOn: (on: boolean) => void;
-	setMode: (mode: Mode) => void;
+	data: Fan;
+	setEnable: (on: boolean) => void;
+	setAuto: (mode: boolean) => void;
 }
 
 const useOnOfFan = create<FanState>((set) => ({
 	data: {
-		on: false,
-		mode: Mode.Manual,
+		enable: false,
+		auto: false,
 	},
-	setOn: (on: boolean) =>
-		set((state: FanState) => ({ data: { ...state.data, on } })),
-	setMode: (mode: Mode) =>
-		set((state: FanState) => ({ data: { ...state.data, mode } })),
+	setEnable: (enable: boolean) =>
+		set((state: FanState) => ({ data: { ...state.data, enable } })),
+	setAuto: (auto: boolean) =>
+		set((state: FanState) => ({ data: { ...state.data, auto } })),
 }));
 
 export { useOnOfFan, Mode };
