@@ -1,7 +1,4 @@
-import { getDatabase, onValue, ref, set } from 'firebase/database';
-
-import { db } from '../lib/firebase';
-import { useEffect } from 'react';
+import { getDatabase, ref, set } from 'firebase/database';
 
 const useFirebase = () => {
 	// const [curTemperature, setCurTemperature] = useState(32);
@@ -20,14 +17,6 @@ const useFirebase = () => {
 	// 		console.log('data', data);
 	// 	});
 	// }, []);
-
-	const handleUpdateTemperature = () => {
-		const starCountRef = ref(db, '/');
-		onValue(starCountRef, (snapshot) => {
-			const data = snapshot.val();
-			// setCurTemperature(data.temp.measure);
-		});
-	};
 
 	const handleGetDataOnOff = () => {
 		const db = getDatabase();
