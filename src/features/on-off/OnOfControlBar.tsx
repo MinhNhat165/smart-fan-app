@@ -1,27 +1,34 @@
-import { TimePicker } from '@mui/x-date-pickers';
+import { CalendarDaysIcon, ClockIcon, PowerIcon } from '../../components/icons';
+
+import { Button } from '@mui/material';
 import { ControlBar } from '../../components/ControlBar';
 import DurationSelector from '../../components/DurationPicker';
-import { CalendarDaysIcon, ClockIcon, PowerIcon } from '../../components/icons';
+import { TimePicker } from '@mui/x-date-pickers';
 import { useOnOfFan } from '../../store/FanState';
 import { useState } from 'react';
-import { Button } from '@mui/material';
+
 enum TimeMode {
 	TIMER = 'TIMER',
 	SCHEDULE = 'SCHEDULE',
 }
 
 export const OnOfControlBar = () => {
-	const { data, setOn } = useOnOfFan();
+	const { data, setEnable } = useOnOfFan();
+	const enable = data.enable;
+	const auto = data.auto;
 	const [timeMode, setTimeMode] = useState<TimeMode>(TimeMode.TIMER);
+	const handleOnOff = () => {
+		setEnable(!enable);
+	};
 	return (
-		<ControlBar>
+		<ControlBar auto={auto}>
 			<div className="flex justify-between">
 				<ControlBar.AutoMode>
 					<ControlBar.Item
 						title={
 							timeMode === TimeMode.TIMER ? 'Timer' : 'Schedule'
 						}
-						color={data.on ? 'danger' : 'primary'}
+						color={enable ? 'danger' : 'primary'}
 						icon={
 							timeMode === TimeMode.TIMER ? (
 								<ClockIcon />
@@ -33,11 +40,9 @@ export const OnOfControlBar = () => {
 				</ControlBar.AutoMode>
 				<ControlBar.ManualMode>
 					<ControlBar.Item
-						title={data.on ? 'Turn off' : 'Turn on'}
-						color={data.on ? 'danger' : 'primary'}
-						onClick={() => {
-							setOn(!data.on);
-						}}
+						title={enable ? 'Turn off' : 'Turn on'}
+						color={enable ? 'danger' : 'primary'}
+						onClick={handleOnOff}
 						icon={<PowerIcon />}
 					/>
 				</ControlBar.ManualMode>
@@ -48,7 +53,7 @@ export const OnOfControlBar = () => {
 					{timeMode === TimeMode.TIMER ? (
 						<>
 							<span className="font-bold">
-								{data.on ? 'Turn off' : 'Turn on'} after
+								{enable ? 'Turn off' : 'Turn on'} after
 							</span>
 							<DurationSelector
 								onChange={(value) => {
