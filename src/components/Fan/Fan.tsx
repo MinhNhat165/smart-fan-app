@@ -2,19 +2,19 @@ import clsx from 'clsx';
 import { useOnOfFan } from '../../store/FanState';
 
 export function Fan() {
-	const on = useOnOfFan((state) => state.data.on);
+	const enable = useOnOfFan((state) => state.data.enable);
 	return (
 		<div className="aspect-square w-56 h-56">
 			<div
 				className={clsx(
 					'w-full h-full rounded-full p-6 relative  flex items-center justify-center',
-					on ? 'animate-spin' : '',
+					enable ? 'animate-spin' : '',
 				)}
 			>
 				<div
 					className={clsx(
 						'w-full h-full rounded-full transition-all duration-500 border-teal-500 border-2 p-0.5',
-						on ? 'opacity-100' : 'opacity-0',
+						enable ? 'opacity-100' : 'opacity-0',
 					)}
 				>
 					<div className="w-full h-full  rounded-full border-teal-500 border-2 p-0.5 ">
