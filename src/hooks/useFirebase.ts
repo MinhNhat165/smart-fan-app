@@ -55,6 +55,15 @@ const useFirebase = () => {
     set(ref(db, "angle/current"), angle);
   };
 
+  const handleChangeAngelSpeed = (speed: number) => {
+    const db = getDatabase();
+    set(ref(db, "angle/speed"), speed);
+  };
+  const handleChangeAngelAuto = (auto: boolean) => {
+    const db = getDatabase();
+    set(ref(db, "angle/auto"), auto);
+  };
+
   const handleEnableTimer = (timerEnable: boolean) => {
     const db = getDatabase();
     set(ref(db, "timer/enable"), timerEnable);
@@ -91,6 +100,8 @@ const useFirebase = () => {
     handleSetTempThreshold,
     handleChangeSpeed,
     handleChangeAngel,
+    handleChangeAngelAuto,
+    handleChangeAngelSpeed,
   };
 };
 
