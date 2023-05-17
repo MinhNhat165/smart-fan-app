@@ -20,7 +20,10 @@ export const SpeedControlBar = () => {
   );
   const controlFirebase = useFirebase();
   return (
-    <ControlBar>
+    <ControlBar
+      auto={data.auto}
+      setAutoFb={controlFirebase.handleChangeSpeedAuto}
+    >
       <ControlBar.Header title={`Fan speed adjustment | ${speed}`}>
         <ControlBar.Switch />
       </ControlBar.Header>
