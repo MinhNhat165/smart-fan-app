@@ -17,7 +17,12 @@ export const AngleControlBar = () => {
   const controlFirebase = useFirebase();
   useEffect(() => {
     setAngle(data.current);
-  }, [data]);
+  }, [data.current]);
+
+  useEffect(() => {
+    setSpeedTransition(data.speed);
+  }, [data.speed]);
+
   return (
     <ControlBar>
       <ControlBar.Props>
@@ -79,7 +84,7 @@ export const AngleControlBar = () => {
                 icon={item.toString()}
                 key={item}
                 onClick={() => {
-                  setSpeedTransition(item);
+                  controlFirebase.handleChangeAngelSpeed(item);
                 }}
                 mode={item === speedTransition ? "filled" : "outlined"}
               />
