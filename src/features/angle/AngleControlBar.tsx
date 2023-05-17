@@ -24,7 +24,10 @@ export const AngleControlBar = () => {
   }, [data.speed]);
 
   return (
-    <ControlBar>
+    <ControlBar
+      auto={data.auto}
+      setAutoFb={controlFirebase.handleChangeAngelAuto}
+    >
       <ControlBar.Props>
         {({ auto }) => (
           <ControlBar.Header

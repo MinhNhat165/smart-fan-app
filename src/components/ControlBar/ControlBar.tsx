@@ -9,7 +9,7 @@ import { ControlBarItem } from "./ControlBarItem";
 export interface ControlBarContext {
   title?: string;
   auto?: boolean;
-  setAuto?: (auto: boolean) => void;
+  setAutoFb?: (auto: boolean) => void;
 }
 
 const ControlBarContext = createContext<ControlBarContext>({});
@@ -21,8 +21,13 @@ export function useControlBar() {
 export interface ControlBarProps {
   children?: ReactNode;
   auto?: boolean;
+  setAutoFb?: (auto: boolean) => void;
 }
-export function ControlBar({ children, auto: _auto = false }: ControlBarProps) {
+export function ControlBar({
+  children,
+  auto: _auto = false,
+  setAutoFb,
+}: ControlBarProps) {
   const [auto, setAuto] = useState<boolean>(_auto);
   useEffect(() => {
     setAuto(_auto);
@@ -32,7 +37,7 @@ export function ControlBar({ children, auto: _auto = false }: ControlBarProps) {
       value={{
         title: "Control Bar",
         auto,
-        setAuto,
+        setAutoFb,
       }}
     >
       <div className="p-3 bg-white shadow rounded-lg mx-2 md:w-80 md:h-[400px]">
@@ -43,12 +48,12 @@ export function ControlBar({ children, auto: _auto = false }: ControlBarProps) {
 }
 
 const ControlBarSwitch = () => {
-  const { auto, setAuto } = useControlBar();
+  const { auto, setAutoFb } = useControlBar();
 
   return (
     <div className="flex items-center gap-2">
       <span className="text-slate-400">Auto</span>{" "}
-      <Switch checked={auto} onChange={setAuto} />
+      <Switch checked={auto} onChange={setAutoFb} />
     </div>
   );
 };
