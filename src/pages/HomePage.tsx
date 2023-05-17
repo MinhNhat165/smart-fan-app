@@ -1,16 +1,16 @@
 import { onValue, ref } from "firebase/database";
 
-import { AngleControlBar } from "../features/angle";
-import { ArrowLeftOnRectangleIcon } from "../components/icons";
-import { Fan } from "../types/fan";
+import { useEffect, useLayoutEffect } from "react";
 import { Fan as FanUi } from "../components/Fan";
+import { ArrowLeftOnRectangleIcon } from "../components/icons";
+import { AngleControlBar } from "../features/angle";
 import { OnOfControlBar } from "../features/on-off";
 import { SpeedControlBar } from "../features/speed";
 import { db } from "../lib/firebase";
-import { useEffect } from "react";
 import { useChangeAngle, useChangeSpeed, useOnOfFan } from "../store/FanState";
-import { Speed } from "../types/speed";
 import { Angle } from "../types/angle";
+import { Fan } from "../types/fan";
+import { Speed } from "../types/speed";
 
 const HomePage = () => {
   const { setAuto, setEnable } = useOnOfFan();

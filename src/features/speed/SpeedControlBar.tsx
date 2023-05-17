@@ -33,7 +33,6 @@ export const SpeedControlBar = () => {
                 key={item}
                 onClick={() => {
                   controlFirebase.handleChangeSpeed(item);
-                  setSpeed(item);
                 }}
                 mode={item === speed ? "filled" : "outlined"}
               />
