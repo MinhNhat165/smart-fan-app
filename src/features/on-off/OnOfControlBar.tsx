@@ -54,7 +54,9 @@ export const OnOfControlBar = () => {
               </span>
               <DurationSelector
                 onChange={(value) => {
-                  console.log(value);
+                  enable
+                    ? controlFirebase.handleSetEndTimer(value)
+                    : controlFirebase.handleSetStartTimer(value);
                 }}
               />
             </>

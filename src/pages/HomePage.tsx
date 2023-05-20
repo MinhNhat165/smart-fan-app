@@ -15,7 +15,8 @@ import { Temp } from "../types/temp";
 
 const HomePage = () => {
   const { setAuto, setEnable } = useOnOfFan();
-  const { data, setCurrentSpeed, setAutoSpeed } = useChangeSpeed();
+  const { data, setCurrentSpeed, setAutoSpeed, setMaxOne, setMaxTwo } =
+    useChangeSpeed();
   const { setCurrentAngle, setAutoAngle, setSpeedAngle } = useChangeAngle();
   const [temp, setTemp] = useState<number>(29);
   useEffect(() => {
@@ -41,6 +42,8 @@ const HomePage = () => {
       const data: Speed = snapshot.val();
       setCurrentSpeed(data.current);
       setAutoSpeed(data.auto);
+      setMaxOne(data.one.max);
+      setMaxTwo(data.two.max);
     });
   }, []);
 
