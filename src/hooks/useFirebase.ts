@@ -61,6 +61,15 @@ const useFirebase = () => {
     set(ref(db, "speed/auto"), auto);
   };
 
+  const handleChangeLevelOne = (max: number) => {
+    const db = getDatabase();
+    set(ref(db, "speed/one/max"), max);
+  };
+
+  const handleChangeLevelTwo = (max: number) => {
+    const db = getDatabase();
+    set(ref(db, "speed/two/max"), max);
+  };
   const handleChangeAngel = (angle: number) => {
     const db = getDatabase();
     set(ref(db, "angle/current"), angle);
@@ -115,6 +124,8 @@ const useFirebase = () => {
     handleChangeAngel,
     handleChangeAngelAuto,
     handleChangeAngelSpeed,
+    handleChangeLevelOne,
+    handleChangeLevelTwo,
   };
 };
 

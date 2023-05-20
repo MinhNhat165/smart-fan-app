@@ -9,17 +9,26 @@ const MAX_TEMP = 50;
 export const SpeedControlBar = () => {
   const { data } = useChangeSpeed();
   const [speed, setSpeed] = useState<number>(data.current);
-  const [tempLevelOne, setTempLevelOne] = useState<number>(20);
-  const [tempLevelTwo, setTempLevelTwo] = useState<number>(40);
+  const [tempLevelOne, setTempLevelOne] = useState<number>(data.one.max);
+  const [tempLevelTwo, setTempLevelTwo] = useState<number>(data.two.max);
   const [tempLevelThree, setTempLevelThree] = useState<number>(
     tempLevelTwo + 1
   );
+  console.log("2 ", tempLevelTwo);
 
   const controlFirebase = useFirebase();
 
   useEffect(() => {
     setSpeed(data.current);
-  }, [data]);
+  }, [data.current]);
+
+  useEffect(() => {
+    setTempLevelOne(data.one.max);
+  }, [data.one]);
+
+  useEffect(() => {
+    setTempLevelTwo(data.two.max);
+  }, [data.two]);
 
   useEffect(() => {
     controlFirebase.handleGetDataOnOff();
@@ -64,8 +73,8 @@ export const SpeedControlBar = () => {
             aria-label="pretto slider"
             value={tempLevelOne}
             onChange={(e, value) => {
-              console.log(e, value);
-              setTempLevelOne(value as number);
+              controlFirebase.handleChangeLevelOne(value as number);
+              // setTempLevelOne(value as number);
             }}
           />
         </AdjustItem>
@@ -74,31 +83,32 @@ export const SpeedControlBar = () => {
             max={MAX_TEMP}
             valueLabelDisplay="auto"
             aria-label="pretto slider"
-            value={[tempLevelOne + 1, tempLevelThree - 1]}
-            onChange={(e, value) => {
-              console.log(e, value);
+            // value={[tempLevelOne + 1, tempLevelThree - 1]}
+            value={[tempLevelOne + 1, tempLevelTwo]}
+            onChange={(value) => {
               if (!Array.isArray(value)) {
                 return;
               }
+
               setTempLevelOne(value[0] - 1 < 0 ? 0 : value[0] - 1);
-              setTempLevelTwo(value[1]);
-              setTempLevelThree(value[1] + 1);
+              controlFirebase.handleChangeLevelTwo(value[1]);
+              // setTempLevelThree(value[1] + 1);
             }}
           />
         </AdjustItem>
-        <AdjustItem title="Level 3">
+        {/* <AdjustItem title="Level 3">
           <Slider
             max={MAX_TEMP}
             valueLabelDisplay="auto"
             aria-label="pretto slider"
-            value={tempLevelThree}
+            // value={tempLevelThree}
+            value={tempLevelTwo + 1}
             onChange={(e, value) => {
-              console.log(e, value);
               setTempLevelThree(value as number);
             }}
             track="inverted"
           />
-        </AdjustItem>
+        </AdjustItem> */}
       </ControlBar.AutoMode>
     </ControlBar>
   );

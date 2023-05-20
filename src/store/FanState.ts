@@ -18,6 +18,8 @@ interface SpeedState {
   data: Speed;
   setCurrentSpeed: (speed: number) => void;
   setAutoSpeed: (mode: boolean) => void;
+  setMaxOne: (max: number) => void;
+  setMaxTwo: (max: number) => void;
 }
 
 interface AngleState {
@@ -55,6 +57,14 @@ const useChangeSpeed = create<SpeedState>((set) => ({
     set((state: SpeedState) => ({ data: { ...state.data, current } })),
   setAutoSpeed: (auto: boolean) =>
     set((state: SpeedState) => ({ data: { ...state.data, auto } })),
+  setMaxOne: (max: number) =>
+    set((state: SpeedState) => ({
+      data: { ...state.data, one: { ...state.data.one, max } },
+    })),
+  setMaxTwo: (max: number) =>
+    set((state: SpeedState) => ({
+      data: { ...state.data, two: { ...state.data.two, max } },
+    })),
 }));
 
 // const useChangeTemp = create<TempState>((set) => ({
