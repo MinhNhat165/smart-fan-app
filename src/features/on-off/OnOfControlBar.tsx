@@ -24,7 +24,7 @@ export const OnOfControlBar = () => {
     controlFirebase.handleOnOffFan(!enable);
   };
   return (
-    <ControlBar auto={auto}>
+    <ControlBar auto={auto} setAutoFb={controlFirebase.handleChangeAutoOnOff}>
       <div className="flex justify-between">
         <ControlBar.AutoMode>
           <ControlBar.Item

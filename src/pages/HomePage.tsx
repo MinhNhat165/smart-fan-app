@@ -1,6 +1,6 @@
 import { onValue, ref } from "firebase/database";
 
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useState } from "react";
 import { Fan as FanUi } from "../components/Fan";
 import { ArrowLeftOnRectangleIcon } from "../components/icons";
 import { AngleControlBar } from "../features/angle";
@@ -11,11 +11,21 @@ import { useChangeAngle, useChangeSpeed, useOnOfFan } from "../store/FanState";
 import { Angle } from "../types/angle";
 import { Fan } from "../types/fan";
 import { Speed } from "../types/speed";
+import { Temp } from "../types/temp";
 
 const HomePage = () => {
   const { setAuto, setEnable } = useOnOfFan();
-  const { setCurrentSpeed, setAutoSpeed } = useChangeSpeed();
+  const { data, setCurrentSpeed, setAutoSpeed } = useChangeSpeed();
   const { setCurrentAngle, setAutoAngle, setSpeedAngle } = useChangeAngle();
+  const [temp, setTemp] = useState<number>(29);
+  useEffect(() => {
+    const starCountRef = ref(db, "/temp");
+    onValue(starCountRef, (snapshot) => {
+      const data: Temp = snapshot.val();
+      setTemp(data.current);
+    });
+  }, []);
+
   useEffect(() => {
     const starCountRef = ref(db, "/fan");
     onValue(starCountRef, (snapshot) => {
@@ -64,12 +74,12 @@ const HomePage = () => {
           </div>
           <div className="flex justify-center px-10 pb-2 gap-2">
             <div className="text-slate-600 w-32 text-center">
-              <div className="text-3xl">25</div>
+              <div className="text-3xl">{temp}</div>
               <div>Temperature (°C)</div>
             </div>
             <div className="w-0.5 h-full bg-slate-200 rounded-lg"></div>
             <div className="text-slate-600 w-32 text-center">
-              <div className="text-3xl">1</div>
+              <div className="text-3xl">{data.current}</div>
               <div>Speed level</div>
             </div>
           </div>
