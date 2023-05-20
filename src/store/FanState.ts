@@ -1,7 +1,7 @@
-import { Fan } from "../types/fan";
 import { create } from "zustand";
-import { Speed } from "../types/speed";
 import { Angle } from "../types/angle";
+import { Fan } from "../types/fan";
+import { Speed } from "../types/speed";
 
 enum Mode {
   Auto = "auto",
@@ -27,6 +27,11 @@ interface AngleState {
   setSpeedAngle: (speed: number) => void;
 }
 
+// interface TempState {
+//   data: Temp;
+//   setCurrentTemp: (angle: number) => void;
+// }
+
 const useOnOfFan = create<FanState>((set) => ({
   data: {
     enable: false,
@@ -51,6 +56,14 @@ const useChangeSpeed = create<SpeedState>((set) => ({
   setAutoSpeed: (auto: boolean) =>
     set((state: SpeedState) => ({ data: { ...state.data, auto } })),
 }));
+
+// const useChangeTemp = create<TempState>((set) => ({
+//   data: {
+//     current: 29,
+//   },
+//   setCurrentSpeed: (current: number) =>
+//     set((current: TempState) => ({ data: { current } })),
+// }));
 
 const useChangeAngle = create<AngleState>((set) => ({
   data: {

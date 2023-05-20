@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
 import { ControlBar } from "../../components/ControlBar";
 import Slider from "../../components/Slider";
-import { useEffect, useState } from "react";
 import useFirebase from "../../hooks/useFirebase";
 import { useChangeSpeed } from "../../store/FanState";
 
@@ -9,16 +9,21 @@ const MAX_TEMP = 50;
 export const SpeedControlBar = () => {
   const { data } = useChangeSpeed();
   const [speed, setSpeed] = useState<number>(data.current);
-  useEffect(() => {
-    setSpeed(data.current);
-  }, [data]);
-
   const [tempLevelOne, setTempLevelOne] = useState<number>(20);
   const [tempLevelTwo, setTempLevelTwo] = useState<number>(40);
   const [tempLevelThree, setTempLevelThree] = useState<number>(
     tempLevelTwo + 1
   );
+
   const controlFirebase = useFirebase();
+
+  useEffect(() => {
+    setSpeed(data.current);
+  }, [data]);
+
+  useEffect(() => {
+    controlFirebase.handleGetDataOnOff();
+  }, []);
   return (
     <ControlBar
       auto={data.auto}
@@ -52,7 +57,7 @@ export const SpeedControlBar = () => {
             <span className="text-sky-600 text-sm">50°C</span>
           </div>
         </div>
-        {/* <AdjustItem title="Level 1">
+        <AdjustItem title="Level 1">
           <Slider
             max={MAX_TEMP}
             valueLabelDisplay="auto"
@@ -93,7 +98,7 @@ export const SpeedControlBar = () => {
             }}
             track="inverted"
           />
-        </AdjustItem> */}
+        </AdjustItem>
       </ControlBar.AutoMode>
     </ControlBar>
   );

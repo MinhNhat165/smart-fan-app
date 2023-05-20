@@ -20,9 +20,10 @@ const useFirebase = () => {
 
   const handleGetDataOnOff = () => {
     const dbRef = ref(getDatabase());
-    get(child(dbRef, `fan/enable`))
+    get(child(dbRef, `temp/current`))
       .then((snapshot) => {
         if (snapshot.exists()) {
+          console.log(snapshot.val());
           return snapshot.val();
         } else {
           console.log("No data available");
@@ -43,6 +44,11 @@ const useFirebase = () => {
     console.log("first");
     const db = getDatabase();
     set(ref(db, "fan/enable"), fanEnable);
+  };
+
+  const handleChangeAutoOnOff = (auto: boolean) => {
+    const db = getDatabase();
+    set(ref(db, "fan/auto"), auto);
   };
 
   const handleChangeSpeed = (speed: number) => {
@@ -97,6 +103,7 @@ const useFirebase = () => {
   return {
     // curTemperature,
     handleGetDataOnOff,
+    handleChangeAutoOnOff,
     handleOnOffFan,
     handleEnableTimer,
     handleSetStartTimer,
