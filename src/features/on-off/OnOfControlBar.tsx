@@ -2,14 +2,14 @@ import { CalendarDaysIcon, ClockIcon, PowerIcon } from "../../components/icons";
 
 import { Button } from "@mui/material";
 import { TimePicker } from "@mui/x-date-pickers";
+import { format, isEqual, parse } from "date-fns";
+import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import { ControlBar } from "../../components/ControlBar";
 import DurationSelector from "../../components/DurationPicker";
 import useFirebase from "../../hooks/useFirebase";
-import { useOnOfFan } from "../../store/FanState";
 import { db } from "../../lib/firebase";
-import { onValue, ref } from "firebase/database";
-import { format, isEqual, isSameMinute, parse, startOfDay } from "date-fns";
+import { useOnOfFan } from "../../store/FanState";
 
 enum TimeMode {
   TIMER = "TIMER",
@@ -49,7 +49,7 @@ export const OnOfControlBar = () => {
     if (auto) {
       interval = setInterval(() => {
         const currentTime = format(new Date(), "HH:mm");
-        const time = enable ? timeStart : timeEnd;
+        const time = enable ? timeEnd : timeStart;
         const parsedTime = parse(time, "HH:mm", new Date());
         const parsedCurrentTime = parse(currentTime, "HH:mm", new Date());
 
@@ -64,7 +64,7 @@ export const OnOfControlBar = () => {
         clearInterval(interval);
       }
     };
-  }, [auto, timeEnd]);
+  }, [auto, timeEnd, timeStart]);
 
   // useEffect(() => {
   //   if(auto){
