@@ -6,14 +6,38 @@ import { ArrowLeftOnRectangleIcon } from "../components/icons";
 import { AngleControlBar } from "../features/angle";
 import { OnOfControlBar } from "../features/on-off";
 import { SpeedControlBar } from "../features/speed";
-import { db } from "../lib/firebase";
+import { auth, db } from "../lib/firebase";
 import { useChangeAngle, useChangeSpeed, useOnOfFan } from "../store/FanState";
 import { Angle } from "../types/angle";
 import { Fan } from "../types/fan";
 import { Speed } from "../types/speed";
 import { Temp } from "../types/temp";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 const HomePage = () => {
+  const [authUser, setAuthUser] = useState<any>();
+
+  useEffect(() => {
+    const listen = onAuthStateChanged(auth, (user) => {
+      console.log("hihi");
+      if (user) {
+        console.log("hihi2", user);
+        setAuthUser(user);
+      } else {
+        window.location.href = "/auth/login";
+        setAuthUser(null);
+      }
+    });
+    return () => {
+      listen();
+    };
+  });
+  useEffect(() => {
+    if (authUser === null) {
+      window.location.href = "/auth/login";
+    }
+  }, [authUser]);
+
   const { setAuto, setEnable } = useOnOfFan();
   const { data, setCurrentSpeed, setAutoSpeed, setMaxOne, setMaxTwo } =
     useChangeSpeed();
@@ -56,6 +80,13 @@ const HomePage = () => {
       setSpeedAngle(data.speed);
     });
   }, []);
+  const userSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        window.location.href = "/auth/login";
+      })
+      .catch((error) => console.log(error));
+  };
 
   return (
     <div className="w-screen home h-screen bg-slate-50 flex flex-col gap-3 pb-4 text-slate-600">
@@ -63,7 +94,8 @@ const HomePage = () => {
         <button
           className="w-10 h-10 justify-self-start flex items-center rounded-full justify-center"
           onClick={() => {
-            window.location.href = "/auth/login";
+            userSignOut();
+            // window.location.href = "/auth/login";
           }}
         >
           <ArrowLeftOnRectangleIcon className="w-6 h-6 text-slate-800" />
