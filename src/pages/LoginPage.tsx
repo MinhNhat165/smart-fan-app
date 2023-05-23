@@ -1,12 +1,8 @@
-import {
-  signInWithEmailAndPassword,
-  getAuth,
-  createUserWithEmailAndPassword,
-} from "firebase/auth";
-import React, { useState } from "react";
-import { auth } from "../lib/firebase";
-import { useNavigate } from "react-router-dom";
 import Alert from "@mui/material/Alert";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../lib/firebase";
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState("");
