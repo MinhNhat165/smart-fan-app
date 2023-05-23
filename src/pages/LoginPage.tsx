@@ -8,7 +8,7 @@ const LoginPage: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const [login, setLogin] = useState(false);
+  const [login, setLogin] = useState(true);
   //   const auth = getAuth();
   const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
