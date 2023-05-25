@@ -19,7 +19,8 @@ const HomePage = () => {
 			setEnable(data.enable);
 			setAuto(data.auto);
 		});
-	}, []);
+  }, []);
+  
 
 	return (
 		<div className="w-screen home h-screen bg-slate-50 flex flex-col gap-3 pb-4 text-slate-600">
