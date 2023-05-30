@@ -1,5 +1,5 @@
 import { CalendarDaysIcon, ClockIcon, PowerIcon } from '../../components/icons';
-import { format, isEqual, parse, set } from 'date-fns';
+import { format, isEqual, parse } from 'date-fns';
 import { onValue, ref } from 'firebase/database';
 import { useEffect, useState } from 'react';
 
