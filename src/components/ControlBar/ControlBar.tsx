@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 export interface ControlBarContext {
 	title?: string;
 	auto?: boolean;
-	setAuto?: (auto: boolean) => void;
+	setAutoFb?: (auto: boolean) => void;
 }
 
 const ControlBarContext = createContext<ControlBarContext>({});
@@ -20,9 +20,16 @@ export function useControlBar() {
 
 export interface ControlBarProps {
 	children?: ReactNode;
+	className?: string;
 	auto?: boolean;
+	setAutoFb?: (auto: boolean) => void;
 }
-export function ControlBar({ children, auto: _auto = false }: ControlBarProps) {
+export function ControlBar({
+	children,
+	className,
+	auto: _auto = false,
+	setAutoFb,
+}: ControlBarProps) {
 	const [auto, setAuto] = useState<boolean>(_auto);
 	useEffect(() => {
 		setAuto(_auto);
@@ -32,22 +39,29 @@ export function ControlBar({ children, auto: _auto = false }: ControlBarProps) {
 			value={{
 				title: 'Control Bar',
 				auto,
-				setAuto,
+				setAutoFb,
 			}}
 		>
-			<div className="p-3 bg-white shadow rounded-lg mx-2 md:w-80 md:h-[400px]">
+			<div
+				className={`p-3 bg-white shadow rounded-lg mx-2 md:w-80 md:h-[400px] ${className}`}
+			>
 				{children}
 			</div>
 		</ControlBarContext.Provider>
 	);
 }
 
-const ControlBarSwitch = () => {
-	const { auto, setAuto } = useControlBar();
+const ControlBarSwitch = ({
+	switchTitle = 'Auto',
+}: {
+	switchTitle?: string;
+}) => {
+	const { auto, setAutoFb } = useControlBar();
+
 	return (
 		<div className="flex items-center gap-2">
-			<span className="text-slate-400">Auto</span>{' '}
-			<Switch checked={auto} onChange={setAuto} />
+			<span className="text-slate-400">{switchTitle}</span>{' '}
+			<Switch checked={auto} onChange={setAutoFb} />
 		</div>
 	);
 };

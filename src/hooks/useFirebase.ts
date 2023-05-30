@@ -1,33 +1,65 @@
-import { getDatabase, ref, set } from 'firebase/database';
+import { child, get, getDatabase, ref, set } from 'firebase/database';
 
 const useFirebase = () => {
-	// const [curTemperature, setCurTemperature] = useState(32);
-
-	// useEffect(() => {
-	// 	const interval = setInterval(() => {
-	// 		handleUpdateTemperature();
-	// 	}, UPDATE_TEMPERATURE_TIMESTAMP);
-	// 	return () => clearInterval(interval);
-	// }, []);
-
-	// useEffect(() => {
-	// 	const starCountRef = ref(db, '/fan');
-	// 	onValue(starCountRef, (snapshot) => {
-	// 		const data = snapshot.val();
-	// 		console.log('data', data);
-	// 	});
-	// }, []);
-
 	const handleGetDataOnOff = () => {
-		const db = getDatabase();
-		// return db.fan.enable;
-		console.log('db', db);
+		const dbRef = ref(getDatabase());
+		get(child(dbRef, `temp/current`))
+			.then((snapshot) => {
+				if (snapshot.exists()) {
+					return snapshot.val();
+				} else {
+					console.log('No data available');
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+			});
 	};
 
 	const handleOnOffFan = (fanEnable: boolean) => {
-		console.log('first');
 		const db = getDatabase();
 		set(ref(db, 'fan/enable'), fanEnable);
+	};
+
+	const handleChangeAutoOnOff = (auto: boolean) => {
+		const db = getDatabase();
+		set(ref(db, 'fan/auto'), auto);
+		if (auto) {
+			set(ref(db, 'temp/auto'), false);
+		}
+	};
+
+	const handleChangeSpeed = (speed: number) => {
+		const db = getDatabase();
+		set(ref(db, 'speed/current'), speed);
+	};
+
+	const handleChangeSpeedAuto = (auto: boolean) => {
+		const db = getDatabase();
+		set(ref(db, 'speed/auto'), auto);
+	};
+
+	const handleChangeLevelOne = (max: number) => {
+		const db = getDatabase();
+		set(ref(db, 'speed/one/max'), max);
+	};
+
+	const handleChangeLevelTwo = (max: number) => {
+		const db = getDatabase();
+		set(ref(db, 'speed/two/max'), max);
+	};
+	const handleChangeAngel = (angle: number) => {
+		const db = getDatabase();
+		set(ref(db, 'angle/current'), angle);
+	};
+
+	const handleChangeAngelSpeed = (speed: number) => {
+		const db = getDatabase();
+		set(ref(db, 'angle/speed'), speed);
+	};
+	const handleChangeAngelAuto = (auto: boolean) => {
+		const db = getDatabase();
+		set(ref(db, 'angle/auto'), auto);
 	};
 
 	const handleEnableTimer = (timerEnable: boolean) => {
@@ -47,7 +79,10 @@ const useFirebase = () => {
 
 	const handleEnableTempControl = (tempEnable: boolean) => {
 		const db = getDatabase();
-		set(ref(db, 'temp/enable'), tempEnable);
+		set(ref(db, 'temp/auto'), tempEnable);
+		if (tempEnable) {
+			set(ref(db, 'fan/auto'), false);
+		}
 	};
 
 	const handleSetTempThreshold = (threshold: number) => {
@@ -56,14 +91,21 @@ const useFirebase = () => {
 	};
 
 	return {
-		// curTemperature,
 		handleGetDataOnOff,
+		handleChangeAutoOnOff,
 		handleOnOffFan,
 		handleEnableTimer,
 		handleSetStartTimer,
 		handleSetEndTimer,
 		handleEnableTempControl,
 		handleSetTempThreshold,
+		handleChangeSpeed,
+		handleChangeSpeedAuto,
+		handleChangeAngel,
+		handleChangeAngelAuto,
+		handleChangeAngelSpeed,
+		handleChangeLevelOne,
+		handleChangeLevelTwo,
 	};
 };
 

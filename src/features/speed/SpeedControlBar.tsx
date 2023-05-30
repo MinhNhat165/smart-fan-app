@@ -1,111 +1,138 @@
-import { ControlBar } from '../../components/ControlBar';
-import Slider from '../../components/Slider';
-import { useState } from 'react';
+import { useEffect, useState } from "react";
+import { ControlBar } from "../../components/ControlBar";
+import Slider from "../../components/Slider";
+import useFirebase from "../../hooks/useFirebase";
+import { useChangeSpeed } from "../../store/FanState";
 
 const MAX_TEMP = 50;
 
 export const SpeedControlBar = () => {
-	const [speed, setSpeed] = useState<number>(1);
+  const { data } = useChangeSpeed();
+  const [speed, setSpeed] = useState<number>(data.current);
+  const [tempLevelOne, setTempLevelOne] = useState<number>(data.one.max);
+  const [tempLevelTwo, setTempLevelTwo] = useState<number>(data.two.max);
+  const [tempLevelThree, setTempLevelThree] = useState<number>(
+    tempLevelTwo + 1
+  );
+  console.log("2 ", tempLevelTwo);
 
-	const [tempLevelOne, setTempLevelOne] = useState<number>(20);
-	const [tempLevelTwo, setTempLevelTwo] = useState<number>(40);
-	const [tempLevelThree, setTempLevelThree] = useState<number>(
-		tempLevelTwo + 1,
-	);
-	return (
-		<ControlBar>
-			<ControlBar.Header title={`Fan speed adjustment | ${speed}`}>
-				<ControlBar.Switch />
-			</ControlBar.Header>
-			<ControlBar.ManualMode>
-				<ControlBar.Body>
-					{[1, 2, 3].map((item) => {
-						return (
-							<ControlBar.Item
-								icon={item.toString()}
-								key={item}
-								onClick={() => {
-									setSpeed(item);
-								}}
-								mode={item === speed ? 'filled' : 'outlined'}
-							/>
-						);
-					})}
-				</ControlBar.Body>
-			</ControlBar.ManualMode>
-			<ControlBar.AutoMode>
-				<div className="flex font-bold my-1">
-					<div className="w-1/5">Speed</div>
-					<div className="flex-1 text-center flex justify-between pl-4">
-						<span className="text-sky-600 text-sm">0°C</span>
-						<span>Temperature</span>
-						<span className="text-sky-600 text-sm">50°C</span>
-					</div>
-				</div>
-				<AdjustItem title="Level 1">
-					<Slider
-						max={MAX_TEMP}
-						valueLabelDisplay="auto"
-						aria-label="pretto slider"
-						value={tempLevelOne}
-						onChange={(e, value) => {
-							console.log(e, value);
-							setTempLevelOne(value as number);
-						}}
-					/>
-				</AdjustItem>
-				<AdjustItem title="Level 2">
-					<Slider
-						max={MAX_TEMP}
-						valueLabelDisplay="auto"
-						aria-label="pretto slider"
-						value={[tempLevelOne + 1, tempLevelThree - 1]}
-						onChange={(e, value) => {
-							console.log(e, value);
-							if (!Array.isArray(value)) {
-								return;
-							}
-							setTempLevelOne(
-								value[0] - 1 < 0 ? 0 : value[0] - 1,
-							);
-							setTempLevelTwo(value[1]);
-							setTempLevelThree(value[1] + 1);
-						}}
-					/>
-				</AdjustItem>
-				<AdjustItem title="Level 3">
-					<Slider
-						max={MAX_TEMP}
-						valueLabelDisplay="auto"
-						aria-label="pretto slider"
-						value={tempLevelThree}
-						onChange={(e, value) => {
-							console.log(e, value);
-							setTempLevelThree(value as number);
-						}}
-						track="inverted"
-					/>
-				</AdjustItem>
-			</ControlBar.AutoMode>
-		</ControlBar>
-	);
+  const controlFirebase = useFirebase();
+
+  useEffect(() => {
+    setSpeed(data.current);
+  }, [data.current]);
+
+  useEffect(() => {
+    setTempLevelOne(data.one.max);
+  }, [data.one]);
+
+  useEffect(() => {
+    setTempLevelTwo(data.two.max);
+    setTempLevelThree(data.two.max + 1);
+  }, [data.two]);
+
+  useEffect(() => {
+    controlFirebase.handleGetDataOnOff();
+  }, []);
+  return (
+    <ControlBar
+      auto={data.auto}
+      setAutoFb={controlFirebase.handleChangeSpeedAuto}
+    >
+      <ControlBar.Header title={`Fan speed adjustment | ${speed}`}>
+        <ControlBar.Switch />
+      </ControlBar.Header>
+      <ControlBar.ManualMode>
+        <ControlBar.Body>
+          {[1, 2, 3].map((item) => {
+            return (
+              <ControlBar.Item
+                icon={item.toString()}
+                key={item}
+                onClick={() => {
+                  controlFirebase.handleChangeSpeed(item);
+                }}
+                mode={item === speed ? "filled" : "outlined"}
+              />
+            );
+          })}
+        </ControlBar.Body>
+      </ControlBar.ManualMode>
+      <ControlBar.AutoMode>
+        <div className="flex font-bold my-1">
+          <div className="w-1/5">Speed</div>
+          <div className="flex-1 text-center flex justify-between pl-4">
+            <span className="text-sky-600 text-sm">0°C</span>
+            <span>Temperature</span>
+            <span className="text-sky-600 text-sm">50°C</span>
+          </div>
+        </div>
+        <AdjustItem title="Level 1">
+          <Slider
+            max={MAX_TEMP}
+            valueLabelDisplay="auto"
+            aria-label="pretto slider"
+            value={tempLevelOne}
+            onChange={(e, value) => {
+              console.log(e, value);
+              controlFirebase.handleChangeLevelOne(value as number);
+              // setTempLevelOne(value as number);
+            }}
+          />
+        </AdjustItem>
+        <AdjustItem title="Level 2">
+          <Slider
+            max={MAX_TEMP}
+            valueLabelDisplay="auto"
+            aria-label="pretto slider"
+            // value={[tempLevelOne + 1, tempLevelThree - 1]}
+            value={[tempLevelOne + 1, tempLevelTwo]}
+            onChange={(e, value) => {
+              console.log(e, value);
+              if (!Array.isArray(value)) {
+                return;
+              }
+
+              setTempLevelOne(value[0] - 1 < 0 ? 0 : value[0] - 1);
+              controlFirebase.handleChangeLevelTwo(value[1]);
+              // setTempLevelTwo(value[1]);
+              // setTempLevelThree(value[1] + 1);
+            }}
+          />
+        </AdjustItem>
+        <AdjustItem title="Level 3">
+          <Slider
+            max={MAX_TEMP}
+            valueLabelDisplay="auto"
+            aria-label="pretto slider"
+            value={tempLevelThree}
+            // value={tempLevelTwo + 1}
+            onChange={(e, value) => {
+              console.log(e, value);
+              // setTempLevelThree(value as number);
+              controlFirebase.handleChangeLevelTwo((value as number) - 1);
+            }}
+            track="inverted"
+          />
+        </AdjustItem>
+      </ControlBar.AutoMode>
+    </ControlBar>
+  );
 };
 
 function AdjustItem({
-	children,
-	title,
+  children,
+  title,
 }: {
-	children?: React.ReactNode;
-	title?: string;
+  children?: React.ReactNode;
+  title?: string;
 }) {
-	return (
-		<div className="flex items-center">
-			<div className="w-1/5">
-				<span>{title}</span>
-			</div>
-			<div className="flex-1 flex items-center gap-2 pl-6">
-				{children}
-			</div>
-		</div>
-	);
+  return (
+    <div className="flex items-center">
+      <div className="w-1/5">
+        <span>{title}</span>
+      </div>
+      <div className="flex-1 flex items-center gap-2 pl-6">{children}</div>
+    </div>
+  );
 }

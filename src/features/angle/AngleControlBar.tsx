@@ -1,18 +1,34 @@
+import { useEffect, useState } from 'react';
+
+import Button from '@mui/material/Button';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import Button from '@mui/material/Button';
 import { ControlBar } from '../../components/ControlBar';
+import { useChangeAngle } from '../../store/FanState';
+import useFirebase from '../../hooks/useFirebase';
 
-import { useState } from 'react';
 const MAX_ANGLE = 180;
 const MIN_ANGLE = 0;
-const STEP = 10;
+const STEP = 30;
 
 export const AngleControlBar = () => {
-	const [angle, setAngle] = useState(90);
+	const { data } = useChangeAngle();
+	const [angle, setAngle] = useState(data.current);
 	const [speedTransition, setSpeedTransition] = useState<number>(1);
+	const controlFirebase = useFirebase();
+	useEffect(() => {
+		setAngle(data.current);
+	}, [data]);
+
+	useEffect(() => {
+		setSpeedTransition(data.speed);
+	}, [data.speed]);
+
 	return (
-		<ControlBar>
+		<ControlBar
+			auto={data.auto}
+			setAutoFb={controlFirebase.handleChangeAngelAuto}
+		>
 			<ControlBar.Props>
 				{({ auto }) => (
 					<ControlBar.Header
@@ -35,7 +51,9 @@ export const AngleControlBar = () => {
 							startIcon={<ChevronLeftIcon />}
 							onClick={() => {
 								if (angle > MIN_ANGLE) {
-									setAngle(angle - STEP);
+									controlFirebase.handleChangeAngel(
+										angle - STEP,
+									);
 								}
 							}}
 						>
@@ -44,7 +62,7 @@ export const AngleControlBar = () => {
 						<Button
 							variant="outlined"
 							onClick={() => {
-								setAngle(90);
+								controlFirebase.handleChangeAngel(90);
 							}}
 						>
 							Center
@@ -55,7 +73,9 @@ export const AngleControlBar = () => {
 							endIcon={<ChevronRightIcon />}
 							onClick={() => {
 								if (angle < MAX_ANGLE) {
-									setAngle(angle + STEP);
+									controlFirebase.handleChangeAngel(
+										angle + STEP,
+									);
 								}
 							}}
 						>
@@ -72,7 +92,9 @@ export const AngleControlBar = () => {
 								icon={item.toString()}
 								key={item}
 								onClick={() => {
-									setSpeedTransition(item);
+									controlFirebase.handleChangeAngelSpeed(
+										item,
+									);
 								}}
 								mode={
 									item === speedTransition
