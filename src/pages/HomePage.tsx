@@ -1,12 +1,7 @@
 import { auth, db } from '../lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { onValue, ref } from 'firebase/database';
-import {
-	useChangeAngle,
-	useChangeSpeed,
-	useOnOfFan,
-	useTemp,
-} from '../store/FanState';
+import { useChangeAngle, useOnOfFan, useTemp } from '../store/FanState';
 import { useEffect, useState } from 'react';
 
 import { Angle } from '../types/angle';
@@ -15,7 +10,6 @@ import { ArrowLeftOnRectangleIcon } from '../components/icons';
 import { Fan } from '../types/fan';
 import { Fan as FanUi } from '../components/Fan';
 import { OnOfControlBar } from '../features/on-off';
-import { Speed } from '../types/speed';
 import { Temp } from '../types/temp';
 import { TemperatureControlBar } from '../features/temperature';
 
@@ -45,7 +39,7 @@ const HomePage = () => {
 
 	const { setCurrentAngle, setAutoAngle, setSpeedAngle } = useChangeAngle();
 
-	const { data: temp, setCurrentTemp, setThreshold, setAutoTemp } = useTemp();
+	const { setCurrentTemp, setThreshold, setAutoTemp } = useTemp();
 	useEffect(() => {
 		const starCountRef = ref(db, '/temp');
 		onValue(starCountRef, (snapshot) => {
