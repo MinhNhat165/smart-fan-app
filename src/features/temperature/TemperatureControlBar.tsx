@@ -47,8 +47,8 @@ export const TemperatureControlBar = () => {
 					disabled={!temp.auto}
 					valueLabelDisplay="auto"
 					value={temp.threshold}
-          onChange={(e, value) => {
-            console.log(e)
+					onChange={(e, value) => {
+						console.log(e);
 						controlFirebase.handleSetTempThreshold(value as number);
 						setThreshold(value as number);
 					}}
@@ -62,7 +62,7 @@ export const TemperatureControlBar = () => {
 					valueLabelDisplay="auto"
 					value={temp.threshold + 1}
 					onChange={(e, value) => {
-            console.log(e)
+						console.log(e);
 
 						const newValue = (value as number) - 1;
 						controlFirebase.handleSetTempThreshold(newValue);

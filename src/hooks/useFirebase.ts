@@ -19,6 +19,7 @@ const useFirebase = () => {
 	const handleOnOffFan = (fanEnable: boolean) => {
 		const db = getDatabase();
 		set(ref(db, 'fan/enable'), fanEnable);
+		set(ref(db, 'temp/auto'), false);
 	};
 
 	const handleChangeAutoOnOff = (auto: boolean) => {
@@ -67,14 +68,16 @@ const useFirebase = () => {
 		set(ref(db, 'timer/enable'), timerEnable);
 	};
 
-	const handleSetStartTimer = (time: string) => {
+	const handleSetStartTimer = (time: string, isDuration: boolean) => {
 		const db = getDatabase();
 		set(ref(db, 'timer/start'), time);
+		set(ref(db, 'timer/isDuration'), isDuration);
 	};
 
-	const handleSetEndTimer = (time: string) => {
+	const handleSetEndTimer = (time: string, isDuration: boolean) => {
 		const db = getDatabase();
 		set(ref(db, 'timer/end'), time);
+		set(ref(db, 'timer/isDuration'), isDuration);
 	};
 
 	const handleEnableTempControl = (tempEnable: boolean) => {

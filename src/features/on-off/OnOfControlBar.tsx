@@ -1,150 +1,209 @@
-import { CalendarDaysIcon, ClockIcon, PowerIcon } from "../../components/icons";
+import { CalendarDaysIcon, ClockIcon, PowerIcon } from '../../components/icons';
+import { format, isEqual, parse, set } from 'date-fns';
+import { onValue, ref } from 'firebase/database';
+import { useEffect, useState } from 'react';
 
-import { Button } from "@mui/material";
-import { TimePicker } from "@mui/x-date-pickers";
-import { format, isEqual, parse } from "date-fns";
-import { onValue, ref } from "firebase/database";
-import { useEffect, useState } from "react";
-import { ControlBar } from "../../components/ControlBar";
-import DurationSelector from "../../components/DurationPicker";
-import useFirebase from "../../hooks/useFirebase";
-import { db } from "../../lib/firebase";
-import { useOnOfFan } from "../../store/FanState";
+import { Button } from '@mui/material';
+import { ControlBar } from '../../components/ControlBar';
+import DurationSelector from '../../components/DurationPicker';
+import { TimePicker } from '@mui/x-date-pickers';
+import { db } from '../../lib/firebase';
+import useFirebase from '../../hooks/useFirebase';
+import { useOnOfFan } from '../../store/FanState';
 
 enum TimeMode {
-  TIMER = "TIMER",
-  SCHEDULE = "SCHEDULE",
+	TIMER = 'TIMER',
+	SCHEDULE = 'SCHEDULE',
 }
 
 export const OnOfControlBar = () => {
-  const { data } = useOnOfFan();
-  const enable = data.enable;
-  const auto = data.auto;
-  const [timeMode, setTimeMode] = useState<TimeMode>(TimeMode.TIMER);
-  const [timeEnd, setTimeEnd] = useState<string>("");
-  const [timeStart, setTimeStart] = useState<string>("");
-  const controlFirebase = useFirebase();
+	const { data } = useOnOfFan();
+	const enable = data.enable;
+	const auto = data.auto;
+	const [timeMode, setTimeMode] = useState<TimeMode>(TimeMode.TIMER);
+	const [timeEnd, setTimeEnd] = useState<string>('');
+	const [timeStart, setTimeStart] = useState<string>('');
+	const [isSetTime, setIsSetTime] = useState<boolean>(false);
+	const [time, setTime] = useState<string | null>(null);
+	const controlFirebase = useFirebase();
 
-  const handleOnOff = () => {
-    controlFirebase.handleOnOffFan(!enable);
-  };
-  useEffect(() => {
-    const starCountRef = ref(db, "/timer/end");
-    onValue(starCountRef, (snapshot) => {
-      const data: string = snapshot.val();
-      setTimeEnd(data);
-    });
-  }, []);
-  useEffect(() => {
-    const starCountRef = ref(db, "/timer/start");
-    onValue(starCountRef, (snapshot) => {
-      const data: string = snapshot.val();
-      setTimeStart(data);
-    });
-  }, []);
+	const [start, setStart] = useState<string | null>(
+		format(new Date(), 'HH:mm'),
+	);
+	const [end, setEnd] = useState<string | null>(format(new Date(), 'HH:mm'));
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+	const handleOnOff = () => {
+		controlFirebase.handleOnOffFan(!enable);
+	};
+	useEffect(() => {
+		const starCountRef = ref(db, '/timer/end');
+		onValue(starCountRef, (snapshot) => {
+			const data: string = snapshot.val();
+			setTimeEnd(data);
+		});
+	}, []);
+	useEffect(() => {
+		const starCountRef = ref(db, '/timer/start');
+		onValue(starCountRef, (snapshot) => {
+			const data: string = snapshot.val();
+			setTimeStart(data);
+		});
+	}, []);
 
-    if (auto) {
-      interval = setInterval(() => {
-        const currentTime = format(new Date(), "HH:mm");
-        const time = enable ? timeEnd : timeStart;
-        const parsedTime = parse(time, "HH:mm", new Date());
-        const parsedCurrentTime = parse(currentTime, "HH:mm", new Date());
+	useEffect(() => {
+		let interval: NodeJS.Timeout | null = null;
 
-        if (isEqual(parsedTime, parsedCurrentTime)) {
-          handleOnOff();
-        }
-      }, 1000);
-    }
+		if (auto) {
+			interval = setInterval(() => {
+				const currentTime = format(new Date(), 'HH:m');
+				const time = enable ? timeEnd : timeStart;
+				const parsedTime = parse(time, 'HH:mm', new Date());
+				const parsedCurrentTime = parse(
+					currentTime,
+					'HH:mm',
+					new Date(),
+				);
 
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [auto, timeEnd, timeStart]);
+				if (isEqual(parsedTime, parsedCurrentTime)) {
+					handleOnOff();
+				}
+			}, 1000);
+		}
 
-  // useEffect(() => {
-  //   if(auto){
-  //     const currentDateTime = new Date();
-  //     const formattedTime = format(currentDateTime, "H:mm");
+		return () => {
+			if (interval) {
+				clearInterval(interval);
+			}
+		};
+	}, [auto, timeEnd, timeStart]);
 
-  //     const currentTime = parse(
-  //       formattedTime,
-  //       "H:mm",
-  //       startOfDay(currentDateTime)
-  //     );
-  //     const timeE = parse(timeEnd, "H:mm", startOfDay(currentDateTime));
+	return (
+		<ControlBar
+			auto={auto}
+			setAutoFb={controlFirebase.handleChangeAutoOnOff}
+			className="flex flex-col"
+		>
+			<div className="flex justify-between">
+				<ControlBar.AutoMode>
+					<ControlBar.Item
+						title={
+							timeMode === TimeMode.TIMER ? 'Timer' : 'Schedule'
+						}
+						color={enable ? 'danger' : 'primary'}
+						icon={
+							timeMode === TimeMode.TIMER ? (
+								<ClockIcon />
+							) : (
+								<CalendarDaysIcon />
+							)
+						}
+					/>
+				</ControlBar.AutoMode>
+				<ControlBar.ManualMode>
+					<ControlBar.Item
+						title={enable ? 'Turn off' : 'Turn on'}
+						color={enable ? 'danger' : 'primary'}
+						onClick={handleOnOff}
+						icon={<PowerIcon />}
+					/>
+				</ControlBar.ManualMode>
+				<ControlBar.Switch />
+			</div>
+			<ControlBar.AutoMode>
+				<ControlBar.Body className="my-4 flex flex-col flex-1">
+					{timeMode === TimeMode.TIMER ? (
+						<>
+							<span className="font-bold">
+								{enable ? 'Turn off' : 'Turn on'} at {time}
+							</span>
+							{!isSetTime ? (
+								<DurationSelector
+									onChange={(value) => {
+										setTime(value);
+										enable
+											? controlFirebase.handleSetEndTimer(
+													value,
+													true,
+													// eslint-disable-next-line no-mixed-spaces-and-tabs
+											  )
+											: controlFirebase.handleSetStartTimer(
+													value,
+													true,
+													// eslint-disable-next-line no-mixed-spaces-and-tabs
+											  );
+										setIsSetTime(true);
+									}}
+								/>
+							) : (
+								<div className="flex justify-between">
+									<Button
+										variant="contained"
+										fullWidth
+										onClick={() => setIsSetTime(false)}
+									>
+										Change
+									</Button>
+								</div>
+							)}
+						</>
+					) : (
+						<div className="w-full flex flex-col gap-4 my-2">
+							<TimePicker
+								disabled={isSetTime}
+								label="Turn on at"
+								defaultValue={new Date()}
+								onChange={(value) => {
+									setStart(format(value as Date, 'H:m'));
+								}}
+							/>
+							<TimePicker
+								disabled={isSetTime}
+								label="Turn off at"
+								defaultValue={new Date()}
+								onChange={(value) => {
+									setEnd(format(value as Date, 'H:m'));
+								}}
+							/>
+							<Button
+								onClick={() => {
+									if (isSetTime) {
+										setIsSetTime(false);
+										return;
+									}
 
-  //     if()
-  //     if (auto && isSameMinute(currentTime, timeE)) {
-  //       controlFirebase.handleOnOffFan(false);
-  //     }
-  //   }
-
-  // }, [auto]);
-  return (
-    <ControlBar auto={auto} setAutoFb={controlFirebase.handleChangeAutoOnOff}>
-      <div className="flex justify-between">
-        <ControlBar.AutoMode>
-          <ControlBar.Item
-            title={timeMode === TimeMode.TIMER ? "Timer" : "Schedule"}
-            color={enable ? "danger" : "primary"}
-            icon={
-              timeMode === TimeMode.TIMER ? <ClockIcon /> : <CalendarDaysIcon />
-            }
-          />
-        </ControlBar.AutoMode>
-        <ControlBar.ManualMode>
-          <ControlBar.Item
-            title={enable ? "Turn off" : "Turn on"}
-            color={enable ? "danger" : "primary"}
-            onClick={handleOnOff}
-            icon={<PowerIcon />}
-          />
-        </ControlBar.ManualMode>
-        <ControlBar.Switch />
-      </div>
-      <ControlBar.AutoMode>
-        <ControlBar.Body className="my-4 flex flex-col">
-          {timeMode === TimeMode.TIMER ? (
-            <>
-              <span className="font-bold">
-                {enable ? "Turn off" : "Turn on"} after
-              </span>
-              <DurationSelector
-                onChange={(value) => {
-                  enable
-                    ? controlFirebase.handleSetEndTimer(value)
-                    : controlFirebase.handleSetStartTimer(value);
-                }}
-              />
-            </>
-          ) : (
-            <div className="w-full flex flex-col gap-4 my-2">
-              <TimePicker label="Turn on at" defaultValue={new Date()} />
-              <TimePicker label="Turn off at" defaultValue={new Date()} />
-              <Button variant="contained" size="large">
-                Save
-              </Button>
-            </div>
-          )}
-        </ControlBar.Body>
-        <div
-          className="text-sky-500 underline"
-          onClick={() => {
-            setTimeMode(
-              timeMode === TimeMode.TIMER ? TimeMode.SCHEDULE : TimeMode.TIMER
-            );
-          }}
-        >
-          Switch to
-          {timeMode === TimeMode.TIMER ? " schedule " : " timer "}
-          mode
-        </div>
-      </ControlBar.AutoMode>
-    </ControlBar>
-  );
+									setIsSetTime(true);
+									controlFirebase.handleSetStartTimer(
+										start as string,
+										false,
+									);
+									controlFirebase.handleSetEndTimer(
+										end as string,
+										false,
+									);
+								}}
+								variant="contained"
+								size="large"
+							>
+								{isSetTime ? 'Change' : 'Set'}
+							</Button>
+						</div>
+					)}
+					<div
+						className="text-sky-500 underline mb-0 cursor-pointer"
+						onClick={() => {
+							setTimeMode(
+								timeMode === TimeMode.TIMER
+									? TimeMode.SCHEDULE
+									: TimeMode.TIMER,
+							);
+						}}
+					>
+						Switch to
+						{timeMode === TimeMode.TIMER ? ' schedule ' : ' timer '}
+						mode
+					</div>
+				</ControlBar.Body>
+			</ControlBar.AutoMode>
+		</ControlBar>
+	);
 };
